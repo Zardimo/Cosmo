@@ -66,8 +66,12 @@ async def blink(canvas, row, column, symbol):
 
 
 async def animate_spaceship(canvas, row_lenght, column_lenght, both_edge):
-    rocket_frame_1 = get_frame(os.path.join(os.getcwd(), 'GitHub/Cosmo/Rocket_animation/rocket_frame_1.txt'))
-    rocket_frame_2 = get_frame(os.path.join(os.getcwd(), 'GitHub/Cosmo/Rocket_animation/rocket_frame_2.txt'))
+    rocket_frame_1 = get_frame(os.path.join(
+    							os.getcwd(),
+    							 './Rocket_animation/rocket_frame_1.txt'))
+    rocket_frame_2 = get_frame(os.path.join(
+    							os.getcwd(),
+    							 './Rocket_animation/rocket_frame_2.txt'))
     row =  row_lenght/2      #center_row_for_rocket
     column = column_lenght/2    #center_column_for_rocket
     frame_row, frame_column = get_frame_size(rocket_frame_1)
@@ -101,21 +105,24 @@ def main(canvas):
     symbols = '+*.:'
     edge = 1
     both_edge = 2
-    coroutines.append(fire(canvas, start_row=random.randint(edge, row_lenght-both_edge), start_column=random.randint(edge, column_lenght-both_edge)))
-    coroutines.append(animate_spaceship(canvas, row_lenght, column_lenght, both_edge))
+    coroutines.append(fire(canvas, random.randint(edge, row_lenght-both_edge),
+    				 random.randint(edge, column_lenght-both_edge)))
+    coroutines.append(animate_spaceship(canvas, row_lenght,
+    									 column_lenght, both_edge))
     canvas.nodelay(1)
     for _ in range(1000):
         random_row = random.randint(edge, row_lenght-both_edge)
         random_column = random.randint(edge, column_lenght-both_edge)
         random_symbol = random.choice(symbols)
-        coroutines.append(blink(canvas, random_row, random_column, random_symbol))
+        coroutines.append(blink(canvas, random_row,
+        						 random_column, random_symbol))
     while True:
         for coroutine in coroutines:
             try:
                 coroutine.send(None)
                 canvas.refresh()
             except StopIteration:
-                coroutines.remove(coroutine1)
+                coroutines.remove(coroutine)
         if len(coroutines) == 0:
             break
         time.sleep(0.1)
