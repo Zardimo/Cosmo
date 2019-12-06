@@ -45,7 +45,6 @@ def get_frame(frame_path):
 async def blink(canvas, row, column, symbol):
     curses.curs_set(False)
     canvas.border()
-    canvas.refresh()
 
     for _ in range(3):
         canvas.addstr(row, column, symbol, curses.A_DIM)
@@ -65,35 +64,35 @@ async def blink(canvas, row, column, symbol):
             await asyncio.sleep(0)
 
 
-async def animate_spaceship(canvas, row_lenght, column_lenght, both_edge):
+def get_border(edge, frame, edge_length):
+    if edge+frame+1 > edge_length:
+        edge = edge_length-frame-1
+    elif edge < 1:
+        edge = 1
+    return edge
+
+
+async def animate_spaceship(canvas, row_length, column_length, both_edge):
     rocket_frame_1 = get_frame(os.path.join(
-    							os.getcwd(),
-    							 './Rocket_animation/rocket_frame_1.txt'))
+                                os.getcwd(),
+                                 'C:/Users/serg/GitHub/Cosmo/rocket_animation/rocket_frame_1.txt'))
     rocket_frame_2 = get_frame(os.path.join(
-    							os.getcwd(),
-    							 './Rocket_animation/rocket_frame_2.txt'))
-    row =  row_lenght/2      #center_row_for_rocket
-    column = column_lenght/2    #center_column_for_rocket
+                                os.getcwd(),
+                                 'C:/Users/serg/GitHub/Cosmo/rocket_animation/rocket_frame_2.txt'))
+    row =  row_length/2      #center_row_for_rocket
+    column = column_length/2    #center_column_for_rocket
     frame_row, frame_column = get_frame_size(rocket_frame_1)
     frames = [rocket_frame_1, rocket_frame_2]
     for _ in range(100):
         for frame in frames:
             row_drection, column_direction, space_direction = read_controls(canvas)
             
-            if row > both_edge and row < row_lenght-frame_row-both_edge:
-                row += row_drection
-            elif row > row_lenght-frame_row-both_edge:
-                row -= 1
-            elif row < both_edge:
-                row += 1
+            row += row_drection
+            row = get_border(row, frame_row, row_length)
 
-            if column > both_edge and column < column_lenght-both_edge-frame_column:
-                column += column_direction
-            elif column < both_edge:
-                column += 1
-            elif column > column_lenght-both_edge-frame_column:
-                column -=1
-
+            column += column_direction
+            column = get_border(column, frame_column, column_length)
+ 
             draw_frame(canvas, row, column, frame)
             await asyncio.sleep(0)
             draw_frame(canvas, row, column, frame, negative=True)
@@ -101,33 +100,40 @@ async def animate_spaceship(canvas, row_lenght, column_lenght, both_edge):
 
 def main(canvas):
     coroutines = []
-    row_lenght, column_lenght = canvas.getmaxyx()
+    row_length, column_length = canvas.getmaxyx()
     symbols = '+*.:'
     edge = 1
     both_edge = 2
-    coroutines.append(fire(canvas, random.randint(edge, row_lenght-both_edge),
-    				 random.randint(edge, column_lenght-both_edge)))
-    coroutines.append(animate_spaceship(canvas, row_lenght,
-    									 column_lenght, both_edge))
+    coroutines.append(fire(canvas, random.randint(edge, row_length-both_edge),
+                     random.randint(edge, column_length-both_edge)))
+    coroutines.append(animate_spaceship(canvas, row_length,
+                                         column_length, both_edge))
     canvas.nodelay(1)
     for _ in range(1000):
-        random_row = random.randint(edge, row_lenght-both_edge)
-        random_column = random.randint(edge, column_lenght-both_edge)
+        random_row = random.randint(edge, row_length-both_edge)
+        random_column = random.randint(edge, column_length-both_edge)
         random_symbol = random.choice(symbols)
         coroutines.append(blink(canvas, random_row,
-        						 random_column, random_symbol))
-    while True:
-        for coroutine in coroutines:
+                                 random_column, random_symbol))
+    while len(coroutines):
+        for coroutine in coroutines.copy():
             try:
                 coroutine.send(None)
-                canvas.refresh()
             except StopIteration:
                 coroutines.remove(coroutine)
-        if len(coroutines) == 0:
+        if not len(coroutines):
             break
+        canvas.refresh()
         time.sleep(0.1)
 
 
 if __name__=='__main__':
     curses.update_lines_cols()
     curses.wrapper(main)
+
+
+    '''if edge+frame+row_drection > edge_length:
+        edge = edge_length - frame_row -1
+    elif edge-frame+row_drection < 1:
+        edge = 1 + frame
+    else '''
