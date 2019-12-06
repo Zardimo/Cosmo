@@ -75,10 +75,10 @@ def get_border(edge, frame, edge_length):
 async def animate_spaceship(canvas, row_length, column_length, both_edge):
     rocket_frame_1 = get_frame(os.path.join(
                                 os.getcwd(),
-                                 'C:/Users/serg/GitHub/Cosmo/rocket_animation/rocket_frame_1.txt'))
+                                 './Cosmo/rocket_animation/rocket_frame_1.txt'))
     rocket_frame_2 = get_frame(os.path.join(
                                 os.getcwd(),
-                                 'C:/Users/serg/GitHub/Cosmo/rocket_animation/rocket_frame_2.txt'))
+                                 './Cosmo/rocket_animation/rocket_frame_2.txt'))
     row =  row_length/2      #center_row_for_rocket
     column = column_length/2    #center_column_for_rocket
     frame_row, frame_column = get_frame_size(rocket_frame_1)
