@@ -115,25 +115,15 @@ def main(canvas):
         random_symbol = random.choice(symbols)
         coroutines.append(blink(canvas, random_row,
                                  random_column, random_symbol))
-    while len(coroutines):
+    while coroutines:
         for coroutine in coroutines.copy():
             try:
                 coroutine.send(None)
             except StopIteration:
                 coroutines.remove(coroutine)
-        if not len(coroutines):
-            break
         canvas.refresh()
         time.sleep(0.1)
 
 
 if __name__=='__main__':
     curses.update_lines_cols()
-    curses.wrapper(main)
-
-
-    '''if edge+frame+row_drection > edge_length:
-        edge = edge_length - frame_row -1
-    elif edge-frame+row_drection < 1:
-        edge = 1 + frame
-    else '''

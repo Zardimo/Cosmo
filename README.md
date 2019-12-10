@@ -5,7 +5,7 @@ Simple game on python about cosmos, with async python.
 
 This script provides simple console interface.
 ```
-$python ./Star.py
+$python ./star.py
 ```
 
 
